@@ -126,13 +126,15 @@ Debajo tienes dos comandos que puedes utilizar para comprobar algunos requisitos
 root@wil:~# head -n 2 /etc/os-release
 PRETTY_NAME="Debuan GNU/Linux 10 (buster)"
 NAME="Debian GNU/Linux"
+
 root@wil:/home/wil# /usr/sbin/aa-status
 apparmor module is loaded.
+
 root@wil:/home/wil# ss -tunlp
 Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:Port
-
 tcp   LISTEN 0      128          0.0.0.0:4242       0.0.0.0:*     users:(("sshd",pid=523,fd=3))
 tcp   LISTEN 0      128             [::]:4242          [::]:*     users:(("sshd",pid=523,fd=4))
+
 root@wil:/home/wil# /usr/sbin/ufw status
 Status: active
 
@@ -154,20 +156,20 @@ La parte bonus solo será evaluada si la parte obligatoria está PERFECTA. Perfe
 
 ```
 # lsblk
-NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-sda                       8:0     0  30.8G   0  disk
-├─sda1                    8:1     0   500M   0  part  /boot
-├─sda2                    8:2     0     1K   0  part
-└─sda5                    8:5     0  30.3G   0  part
-  └─sda5_crypt          254:0     0  30.3G   0  crypt
-    ├─LVMGroup-root     254:1     0    10G   0  lvm   /
-    ├─LVMGroup-swap     254:2     0   2.3G   0  lvm   [SWAP]
-    └─LVMGroup-home     254:3     0     5G   0  lvm   /home
-    ├─LVMGroup-var      254:4     0     3G   0  lvm   /var
-    ├─LVMGroup-srv      254:5     0     3G   0  lvm   /srv
-    ├─LVMGroup-tmp      254:6     0     3G   0  lvm   /tmp
-    └─LVMGroup-var--log 254:7     0     4G   0  lvm   /var/log
-sr0                      11:0     1  1024M   0  rom
+NAME                     MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+sda                        8:0     0  30.8G   0  disk
+├─sda1                     8:1     0   500M   0  part  /boot
+├─sda2                     8:2     0     1K   0  part
+└─sda5                     8:5     0  30.3G   0  part
+  └─sda5_crypt           254:0     0  30.3G   0  crypt
+    ├─LVMGroup-root      254:1     0    10G   0  lvm   /
+    ├─LVMGroup-swap      254:2     0   2.3G   0  lvm   [SWAP]
+    ├─LVMGroup-home      254:3     0     5G   0  lvm   /home
+    ├─LVMGroup-var       254:4     0     3G   0  lvm   /var
+    ├─LVMGroup-srv       254:5     0     3G   0  lvm   /srv
+    ├─LVMGroup-tmp       254:6     0     3G   0  lvm   /tmp
+    └─LVMGroup-var--log  254:7     0     4G   0  lvm   /var/log
+sr0                       11:0     1  1024M   0  rom
 ```
 
 - Configura un sitio WordPress funcional con los siguientes servicios: lighttpd, MariaDB, y PHP.
