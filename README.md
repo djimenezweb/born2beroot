@@ -124,16 +124,16 @@ Debajo tienes dos comandos que puedes utilizar para comprobar algunos requisitos
 
 ```
 root@wil:~# head -n 2 /etc/os-release
-PRETTY_NAME="Debuan GNU/Linux 10 (buster)"
+PRETTY_NAME="Debian GNU/Linux 10 (buster)"
 NAME="Debian GNU/Linux"
 
 root@wil:/home/wil# /usr/sbin/aa-status
 apparmor module is loaded.
 
 root@wil:/home/wil# ss -tunlp
-Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:Port
-tcp   LISTEN 0      128          0.0.0.0:4242       0.0.0.0:*     users:(("sshd",pid=523,fd=3))
-tcp   LISTEN 0      128             [::]:4242          [::]:*     users:(("sshd",pid=523,fd=4))
+Netid  State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
+tcp    LISTEN  0       128           0.0.0.0:4242       0.0.0.0:*     users:(("sshd",pid=523,fd=3))
+tcp    LISTEN  0       128              [::]:4242          [::]:*     users:(("sshd",pid=523,fd=4))
 
 root@wil:/home/wil# /usr/sbin/ufw status
 Status: active
@@ -196,6 +196,6 @@ Este es un ejemplo del tipo de resultado que obtendrás:
 
 - `6e657c4619944be17df3c31faa030c25e43e40af`
 
-Por favor, ten en cuenta que la firma de tu VM puede verse alterada tras tu primera evaluación. Para solucionar este problema, puedes duplicar tus máquinas virtuales o usar save state.
+Por favor, ten en cuenta que la firma de tu VM puede verse alterada tras tu primera evaluación. Para solucionar este problema, puedes duplicar tus máquinas virtuales o usar `save state`.
 
 Evidentemente está PROHIBIDO entregar tu máquina virtual en tu repositorio de Git. Durante la defensa, el contenido del archivo `signature.txt` se comparará con la firma de tu máquina virtual. Si las dos no son idénticas, tu nota será 0.
