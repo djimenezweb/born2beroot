@@ -17,7 +17,7 @@ Como consiste en configurar un servidor, deberás instalar el número mínimo de
 
 Deberás elegir como sistema operativo la última versión estable de Debian (no testing/unstable), o la última versión estable de Rocky. Se recomienda encarecidamente Debian si no tienes experiencia en administración de sistemas.
 
-Configurar Rocky es bastante complejo. Por lo tanto, no tienes que configurar `KDump`. Sin embargo, `SELinux` debe ejecutarse al iniciar y su configuración debe adaptarse a las necesidades del proyecto. `AppArmor` en Debian debe ejecutarse al inciar también.
+Configurar Rocky es bastante complejo. Por lo tanto, no tienes que configurar `KDump`. Sin embargo, `SELinux` debe ejecutarse al iniciar y su configuración debe adaptarse a las necesidades del proyecto. `AppArmor` en Debian debe ejecutarse al iniciar también.
 
 Debes crear al menos 2 particiones cifradas usando `LVM`. Puedes encontrar un ejemplo de lo que se espera debajo:
 
@@ -44,21 +44,11 @@ El uso de `SSH` será comprobado durante la defensa creando un nuevo usuario. Po
 
 Debes configurar tu sistema operativo con el firewall `UFW`, (o `firewalld` en Rocky) dejando solamente el puerto `4242` abierto en tu máquina virtual.
 
-Tu firewall debe estar activo cuando ejecutes la máquina virtual. Para Rocky, debes usar `firewalld` en lugar de `UFW`.
+Tu firewall debe estar activo cuando ejecutes la máquina virtual.
 
 El `hostname` de tu máquina virtual debe ser tu login terminado en 42 (por ejemplo, `wil42`). Deberás modificar este `hostname` durante tu evaluación.
 
-### Configuración de los usuarios
-
-Debes implementar una política de contraseñas fuerte (también contraseña para `root`):
-
-- Tu contraseña debe expirar cada 30 días.
-- El número mínimo de días permitido antes de modificar una contraseña deberá ser 2.
-- El usuario debe recibir un mensaje de aviso 7 días antes de que su contraseña expire.
-- Tu contraseña debe tener como mínimo 10 caracteres de longitud. Debe contener una mayúscula, una minúscula y un número.
-- No puede tener más de 3 veces consecutivas el mismo carácter.
-- No puede contener el nombre del usuario.
-- Debe tener al menos 7 caracteres que no sean parte de la antigua contraseña (no se aplica a la contraseña para root).
+Debes implementar una política de contraseñas fuerte (también para la contraseña de `root`).
 
 Debes instalar y configurar `sudo` siguiendo reglas estrictas.
 
@@ -67,6 +57,16 @@ Además del usuario `root`, un usuario con tu login como nombre debe existir.
 Este usuario debe pertenecer a los grupos `user42` y `sudo`.
 
 Durante la defensa, deberás crear un usuario y asignárselo a un grupo.
+
+### Política de contraseñas
+
+- Tu contraseña debe expirar cada 30 días.
+- El número mínimo de días permitido antes de modificar una contraseña deberá ser 2.
+- El usuario debe recibir un mensaje de aviso 7 días antes de que su contraseña expire.
+- Tu contraseña debe tener como mínimo 10 caracteres de longitud. Debe contener una mayúscula, una minúscula y un número.
+- No puede tener más de 3 veces consecutivas el mismo carácter.
+- No puede contener el nombre del usuario.
+- Debe tener al menos 7 caracteres que no sean parte de la antigua contraseña (no se aplica a la contraseña para root).
 
 Después de preparar tus archivos de configuración, deberás cambiar la contraseña de todas las cuentas presentes en la máquina virtual, `root` incluida.
 
@@ -119,6 +119,8 @@ Broadcast message from root@wil (tty1) (Sun Apr 25 15:45:00 2021):
     #Network: IP 10.0.2.15 (08.00:27:51:9b:a5)
     #Sudo : 42 cmd
 ```
+
+## Ejemplos
 
 Debajo tienes dos comandos que puedes utilizar para comprobar algunos requisitos del subject:
 
