@@ -1,25 +1,58 @@
-# MEMORY (free)
+# ARCHITECTURE
+arch="$(uname -s -n -r)"
+kern="$(uname -v -m -o)"
+
+# CPU
+cpu_phys="$(nproc)"
+cpu_sockets="$(lscpu | grep "Socket(s)" | awk '{print $2}')"
+cpu_cores="$(lscpu | grep "Core(s) per socket" | awk '{print $2}')"
+cpu_threads="$(lscpu | grep "Thread(s) per socket" | awk '{print $2}')"
+cpu_virtual="$(expr $cpu_sockets \* $cpu_cores \* $cpu_threads)"
+
+# MEMORY
 # 7th column = Available memory
 # 2nd column = Total memory
-mem_avail="$(free -m | grep "Mem" | awk '{print $7}')"
-mem_total="$(free -m | grep "Mem" | awk '{print $2}')"
-mem_pcent="$(expr 100 \* $mem_avail / $mem_total)"
+mem_avail="$(free -m | grep "Mem" | awk '{print $7}' | xargs)"
+mem_total="$(free -m | grep "Mem" | awk '{print $2}' | xargs)"
+mem_pcent="$(expr 100 \* $mem_avail / $mem_total | xargs)"
 
-# DISK (df)
-dsk_avail="$(df -BM --output='avail' . | awk 'NR==2')"
-dsk_total="$(df -BM --output='size' . | awk 'NR==2')"
-dsk_pcent="$(df --output='pcent' . | awk 'NR==2')"
+# DISK
+dsk_avail="$(df -BM --output='avail' . | awk 'NR==2' | xargs)"
+dsk_total="$(df -BM --output='size' . | awk 'NR==2' | xargs)"
+dsk_pcent="$(df --output='pcent' . | awk 'NR==2' | xargs)"
 
-echo "#Architecture:    $(uname -s) $(uname -n) $(uname -r)"
-echo "                  $(uname -v) $(uname -m) $(uname -p) $(uname -i) $(uname -o)"
-echo "#CPU physical:    $(nproc)"
-echo "#CPU virtual:     $()"
-echo "#Memory Usage:    $(echo $mem_avail)/$(echo $mem_total)MB ($(echo $mem_pcent)%)"
-echo "#Disk Usage:      $(echo $dsk_avail)/$(echo $dsk_total) ($(echo $dsk_pcent))"
+# NETWORK
+# ifconfig is not installed by default on Debian
+ip_addr="$(ifconfig | grep inet | awk 'NR==1 {print $2}')"
+mac_addr="$(ifconfig | grep ether | awk 'NR==1 {print $2}')"
+
+# BOOT
+last_boot="$(uptime -s)"
+
+# LVS
+lvs_count="$(lvs | wc -l)"
+if [ $lvs_count -gt 1 ]; then
+	lvs_active="Yes"
+else
+	lvs_active="No"
+fi
+
+# ESTABLISHED TCP CONNECTIONS
+tcp_conn="$(ss -tH state established | wc -l)"
+
+# LOGGED USERS
+loggedusr="$(who | wc -l)"
+
+echo "#Architecture:    $arch"
+echo "                  $kern"
+echo "#Physical CPUs:   $cpu_phys"
+echo "#Virtual CPUs:    $cpu_virtual"
+echo "#Memory Usage:    $mem_avail/$mem_total MB ($mem_pcent%)"
+echo "#Disk Usage:      $dsk_avail/$dsk_total ($dsk_pcent)"
 echo "#CPU load:        $()"
-echo "#Last boot:       $(last reboot -n 1 -F | grep "reboot")"
-echo "#LVM use:         $()"
-echo "#TCP Connections: $()"
-echo "#Logged users:    $(who | wc -l)"
-echo "#IP addr / MAC:   $(hostname -i)"
+echo "#Last boot:       $last_boot"
+echo "#LVM use:         $lvs_active"
+echo "#TCP Connections: $tcp_conn ESTABLISHED"
+echo "#Logged users:    $loggedusr"
+echo "#IP addr / MAC:   $ip_addr ($mac_addr)"
 echo "#Sudo commands:   $()"
