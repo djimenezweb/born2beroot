@@ -1,25 +1,30 @@
+#!/bin/bash
+
 # ARCHITECTURE
-arch="$(uname -s -n -r)"
-kern="$(uname -v -m -o)"
+arch="$(uname -a)"
 
 # CPU
 cpu_phys="$(nproc)"
-cpu_sockets="$(lscpu | awk '/Socket\(s\)/ {print $2}')"
-cpu_cores="$(lscpu | awk '/Core\(s\) per socket/ {print $4}')"
-cpu_threads="$(lscpu | awk '/Thread\(s\) per core/ {print $4}')"
+cpu_sockets="$(lscpu | awk '/Socket\(s\)/ {print $NF}')"
+cpu_cores="$(lscpu | awk '/Core\(s\) per socket/ {print $NF}')"
+cpu_threads="$(lscpu | awk '/Thread\(s\) per core/ {print $NF}')"
 cpu_virtual="$(( cpu_sockets * cpu_cores * cpu_threads ))"
 
 # MEMORY
-# 7th column = Available memory
+# 3rd column = Used memory
 # 2nd column = Total memory
-mem_avail="$(free -m | awk '/Mem/ {print $7}' | xargs)"
+mem_used="$(free -m | awk '/Mem/ {print $3}' | xargs)"
 mem_total="$(free -m | awk '/Mem/ {print $2}' | xargs)"
-mem_pcent="$(( 100 * $mem_avail / $mem_total ))"
+mem_pcent="$(( 100 * $mem_used / $mem_total ))"
 
 # DISK
-dsk_avail="$(df -BG --total --output='avail' | awk 'NR==2' | xargs)"
-dsk_total="$(df -BG --total --output='size' | awk 'NR==2' | xargs)"
-dsk_pcent="$(df --total --output='pcent' | awk 'NR==2' | xargs)"
+dsk_used="$(df -BG --total --output='used' | tail -1 | xargs)"
+dsk_total="$(df -BG --total --output='size' | tail -1 | xargs)"
+dsk_pcent="$(df --total --output='pcent' | tail -1)"
+
+# CPU LOAD
+# Requires sysstat
+cpu_load="$(mpstat | tail -1 | awk '{print 100 - $NF}')%"
 
 # NETWORK
 ip_addr=$(hostname -I | awk '{print $1}')
@@ -29,7 +34,8 @@ mac_addr=$(ip link show | awk '/ether/ {print $2; exit}')
 last_boot="$(uptime -s)"
 
 # LVS
-lvs_count="$(lvs | wc -l)"
+# Can be done running lvs but needs lvm2 package
+lvs_count="$(lsblk | grep lvm | wc -l)"
 if [ $lvs_count -gt 1 ]; then
 	lvs_active="Yes"
 else
@@ -42,16 +48,19 @@ tcp_conn="$(ss -tH state established | wc -l)"
 # LOGGED USERS
 loggedusr="$(who | wc -l)"
 
-echo "#Architecture:    $arch"
-echo "                  $kern"
-echo "#Physical CPUs:   $cpu_phys"
-echo "#Virtual CPUs:    $cpu_virtual ---IMPROVE---"
-echo "#Memory Usage:    ${mem_avail}/${mem_total} MB (${mem_pcent}%)"
-echo "#Disk Usage:      ${dsk_avail}/${dsk_total} (${dsk_pcent}) ---WRONG---"
-echo "#CPU load:        $()---TO DO---"
-echo "#Last boot:       $last_boot"
-echo "#LVM use:         $lvs_active"
-echo "#TCP Connections: $tcp_conn ESTABLISHED"
-echo "#Logged users:    $loggedusr"
-echo "#IP addr / MAC:   $ip_addr (${mac_addr})"
-echo "#Sudo commands:   $()---TO DO---"
+# SUDO COMMANDS
+sudo_comm="$(journalctl _COMM=sudo | grep COMMAND | wc -l)"
+
+echo "architecture    : $arch"
+echo "physical CPUs   : $cpu_phys"
+echo "virtual CPUs    : $cpu_virtual"
+echo "memory usage    : ${mem_used}M/${mem_total}M (${mem_pcent}%)"
+echo "disk usage      : ${dsk_used}/${dsk_total} (${dsk_pcent})"
+echo "CPU load        : $cpu_load"
+echo "last boot       : $last_boot"
+echo "LVM use         : $lvs_active"
+echo "TCP connections : $tcp_conn established"
+echo "logged users    : $loggedusr"
+echo "ip address      : $ip_addr"
+echo "mac address     : $mac_addr"
+echo "sudo commands   : $sudo_comm"
