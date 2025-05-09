@@ -18,9 +18,9 @@ mem_total="$(free -m | awk '/Mem/ {print $2}' | xargs)"
 mem_pcent="$(( 100 * $mem_used / $mem_total ))"
 
 # DISK
-dsk_used="$(df -BG --total --output='used' | tail -1 | xargs)"
-dsk_total="$(df -BG --total --output='size' | tail -1 | xargs)"
-dsk_pcent="$(df --total --output='pcent' | tail -1)"
+dsk_used="$(df -BM --total --output='used' | tail -1 | xargs)"
+dsk_total="$(df -BM --total --output='size' | tail -1 | xargs)"
+dsk_pcent="$(df --total --output='pcent' | tail -1 | xargs)"
 
 # CPU LOAD
 # Requires sysstat
@@ -28,7 +28,7 @@ cpu_load="$(mpstat | tail -1 | awk '{print 100 - $NF}')%"
 
 # NETWORK
 ip_addr=$(hostname -I | awk '{print $1}')
-mac_addr=$(ip link show | awk '/ether/ {print $2; exit}')
+mac_addr=$(ip link | awk '/ether/ {print $2}')
 
 # BOOT
 last_boot="$(uptime -s)"
@@ -46,7 +46,7 @@ fi
 tcp_conn="$(ss -tH state established | wc -l)"
 
 # LOGGED USERS
-loggedusr="$(who | wc -l)"
+loggedusr="$(who -q | sed -n 's/^# users=//p')"
 
 # SUDO COMMANDS
 sudo_comm="$(journalctl _COMM=sudo | grep COMMAND | wc -l)"
@@ -54,8 +54,8 @@ sudo_comm="$(journalctl _COMM=sudo | grep COMMAND | wc -l)"
 echo "architecture    : $arch"
 echo "physical CPUs   : $cpu_phys"
 echo "virtual CPUs    : $cpu_virtual"
-echo "memory usage    : ${mem_used}M/${mem_total}M (${mem_pcent}%)"
-echo "disk usage      : ${dsk_used}/${dsk_total} (${dsk_pcent})"
+echo "memory usage    : ${mem_used}M / ${mem_total}M (${mem_pcent}%)"
+echo "disk usage      : ${dsk_used} / ${dsk_total} (${dsk_pcent})"
 echo "CPU load        : $cpu_load"
 echo "last boot       : $last_boot"
 echo "LVM use         : $lvs_active"
