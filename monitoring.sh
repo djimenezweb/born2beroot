@@ -36,7 +36,7 @@ last_boot="$(uptime -s)"
 # LVS
 # Can be done running lvs but needs lvm2 package
 lvs_count="$(lsblk | grep lvm | wc -l)"
-if [ $lvs_count -gt 1 ]; then
+if [ $lvs_count -gt 0 ]; then
 	lvs_active="Yes"
 else
 	lvs_active="No"
@@ -49,7 +49,7 @@ tcp_conn="$(ss -tH state established | wc -l)"
 loggedusr="$(who -q | sed -n 's/^# users=//p')"
 
 # SUDO COMMANDS
-sudo_comm="$(journalctl _COMM=sudo | grep COMMAND | wc -l)"
+sudo_comm="$(cat /var/log/sudo/logfile | grep COMMAND | wc -l)"
 
 echo "architecture    : $arch"
 echo "physical CPUs   : $cpu_phys"
